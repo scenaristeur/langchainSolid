@@ -1,5 +1,6 @@
 import sys
 from datetime import datetime
+from JSONDocumentLoader import JSONDocumentLoader
 
 print('Number of arguments:', len(sys.argv), 'arguments.')
 print('Argument List:', str(sys.argv))
@@ -32,6 +33,14 @@ class SolidScanner():
         if len(urls) > 0:
             url = urls.pop()
             print("url", url)
+            print("rest", urls)
+            loader = JSONDocumentLoader(url)
+            #docs = loader.load()
+            loaded = loader.load()
+            docs = loaded["documents"]
+            containers = loaded["containers"]
+            print("\n",len(docs), "loaded")
+            print("containers", containers)
 
 
 scanner = SolidScanner(url)

@@ -9,26 +9,29 @@ jsonld.set_document_loader(jsonld.aiohttp_document_loader(timeout=1000))
 import hashlib
 from datetime import datetime
 
+
+
 class JSONDocumentLoader(BaseLoader):
-    def __init__(self, resource: object):
-        self.url = resource['url']
+    def __init__(self, url: str):
+        self.url = url
         print("scanning", self.url)
         
+
+
     def load(self) -> list[Document]:
         flattened = jsonld.flatten(self.url)
        # print(json.dumps(flattened, indent=2))
 
+   
+
         for i in flattened:
             print("--", i['@id'])
         documents = self.parse(flattened)
-        print(documents)
 
         return documents
 # see https://github.com/hwchase17/langchain/blob/master/langchain/document_loaders/json_loader.py
     def parse(self, json_data) -> list[Document]:
         documents = []
-        containers = []
-        result = {}
 
         hash = hashlib.md5(json.dumps(json_data).encode())
         print("The hexadecimal equivalent of hash is : ", end ="")
@@ -36,7 +39,7 @@ class JSONDocumentLoader(BaseLoader):
 
 
         for item in json_data:
-            print(json.dumps(item, indent=2))
+           # print(json.dumps(item, indent=2))
             document = Document(
                 metadata={
                     # Set the metadata properties based on the JSON data
@@ -51,16 +54,14 @@ class JSONDocumentLoader(BaseLoader):
             )
             documents.append(document)
             if '@type' in item :
-                #print("type", item['@type'])
+                print("type", item['@type'])
                 if 'http://www.w3.org/ns/ldp#BasicContainer' in item['@type'] or 'http://www.w3.org/ns/ldp#Container' in item['@type']: 
-                    print("todo", item['@id'])
-                    containers.append(item['@id'])
-            """ else:
+                    
+                    JSONDocumentLoader(item['@id'])
+            else:
                 print("no type")
-                """
-        result['documents'] = documents
-        result['containers'] = containers
-        return result
+
+        return documents
 
 
 #loader = JSONDocumentLoader("https://spoggy-test4.solidcommunity.net/public/"
@@ -89,7 +90,6 @@ print (pdf_metadata) """
 # https://learn.deeplearning.ai/langchain-chat-with-your-data/lesson/4/vectorstores-and-embedding
 
 # Load PDF
-"""
 loaders = [
     # Duplicate documents on purpose - messy data
     JSONDocumentLoader("https://spoggy-test5.solidcommunity.net/public/"),
@@ -127,9 +127,30 @@ openai.api_key  = os.environ['OPENAI_API_KEY']
 from langchain.embeddings.openai import OpenAIEmbeddings
 embedding = OpenAIEmbeddings()
 
+
+"""
+sentence1 = "i like dogs"
+sentence2 = "i like canines"
+sentence3 = "the weather is ugly outside"
+
+embedding1 = embedding.embed_query(sentence1)
+embedding2 = embedding.embed_query(sentence2)
+embedding3 = embedding.embed_query(sentence3)
+import numpy as np
+print(np.dot(embedding1, embedding2))
+print(np.dot(embedding1, embedding3))
+print(np.dot(embedding2, embedding3)) 
+"""
+
+
+#for doc in docs:
+ #   print(doc)
+    #d = doc[0] # https://github.com/hwchase17/langchain/issues/2222
+  #  doc_embedding = embedding.embed_query(doc.to_dict())
+
 from langchain.vectorstores import Chroma
 persist_directory = 'docs/chroma/'
-
+# !rm -rf ./docs/chroma  # remove old database files if any
 vectordb = Chroma.from_documents(
     documents=docs,
     embedding=embedding,
@@ -149,5 +170,3 @@ print("##1",docs_result[1].page_content)
 print("##2",docs_result[2].page_content)
 
 vectordb.persist()
-
-"""
