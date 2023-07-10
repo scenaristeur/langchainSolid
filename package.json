@@ -1,0 +1,15 @@
+{
+  "name": "langchainsolid",
+  "version": "1.0.0",
+  "description": "- https://learn.deeplearning.ai/langchain-chat-with-your-data/lesson/2/document-loading",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "langchain": "^0.0.104"
+  }
+}
