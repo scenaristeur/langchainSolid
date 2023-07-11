@@ -1,7 +1,29 @@
+from langchain.vectorstores import Chroma
+from langchain.embeddings.openai import OpenAIEmbeddings
 import sys
 from datetime import datetime
 from JSONDocumentLoader import JSONDocumentLoader
 from termcolor import colored
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+import os
+import openai
+from dotenv import load_dotenv, find_dotenv
+_ = load_dotenv(find_dotenv())  # read local .env file
+
+openai.api_key = os.environ['OPENAI_API_KEY']
+
+
+embedding = OpenAIEmbeddings()
+
+persist_directory = 'docs/chroma/'
+""" 
+vectordb = Chroma(
+    # vectordb = Chroma.from_documents(
+    # documents=docs,
+    embedding_function=embedding,
+    persist_directory=persist_directory
+) """
+
 
 print('Number of arguments:', len(sys.argv), 'arguments.')
 print('Argument List:', str(sys.argv))
@@ -38,7 +60,8 @@ class SolidScanner():
             # docs = loader.load()
             loaded = loader.load()
             if ("error" in loaded):
-                print("############################ERROR", loaded["error"])
+                print(colored("############################ERROR"+
+                      loaded["error"] + ' '+loaded['url'], 'red'))
             else:
                 docs = loaded["documents"]
                 containers = loaded["containers"]
@@ -76,8 +99,25 @@ class SolidScanner():
         # s#elf.__scan__()
 
     def __storeDocs__(self, docs):
-        #print("__storing", docs)
-        print(colored('__storing docs', 'red'), colored(len(docs), 'green'))
+        # print("__storing", docs)
+        print(colored('__storing docs ' + str(len(docs)), 'green'))
+        # Split
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1500,
+            chunk_overlap=150
+        )
+        splits = text_splitter.split_documents(docs)
+        print("Splits", len(splits))
+        
+
+        vectordb = Chroma.from_documents(
+            documents=splits,
+            embedding=embedding,
+            persist_directory=persist_directory
+        )
+
+        print(colored('___VECTORDBDOCS COUNT___' +
+              str(vectordb._collection.count()), 'green'))
 
 
 scanner = SolidScanner(url)

@@ -46,6 +46,9 @@ class JSONDocumentLoader(BaseLoader):
 
         for item in json_data:
            # print(json.dumps(item, indent=2))
+           
+           # !!!!!!!!!!!!!!!!!!!!
+           # #https://stackoverflow.com/questions/76265631/chromadb-add-single-document-only-if-it-doesnt-exist
             document = Document(
                 metadata={
                     # Set the metadata properties based on the JSON data

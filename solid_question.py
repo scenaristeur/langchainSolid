@@ -27,9 +27,9 @@ vectordb = Chroma(
 print(vectordb._collection.count())
 
 
-#question = "What is hospex ?"
-question = "who knows https://spoggy-test5.solidcommunity.net/profile/card#me ?"
-question = "what are the name of  https://spoggy-test5.solidcommunity.net/profile/card#me 'http://xmlns.com/foaf/0.1/knows' <name> ?"
+question = "What is hospex ?"
+#question = "who knows https://spoggy-test5.solidcommunity.net/profile/card#me ?"
+#question = "what are the name of  https://spoggy-test5.solidcommunity.net/profile/card#me 'http://xmlns.com/foaf/0.1/knows' <name> ?"
 
 
 print("##",question,"##")
