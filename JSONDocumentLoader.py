@@ -1,3 +1,5 @@
+from datetime import datetime
+import hashlib
 from langchain.docstore.document import Document
 from langchain.document_loaders.base import BaseLoader
 from pyld import jsonld
@@ -6,37 +8,43 @@ import json
 # utile ? asynch loader
 jsonld.set_document_loader(jsonld.aiohttp_document_loader(timeout=1000))
 
-import hashlib
-from datetime import datetime
 
 class JSONDocumentLoader(BaseLoader):
     def __init__(self, resource: object):
         self.url = resource['url']
         print("scanning", self.url)
-        
+
     def load(self) -> list[Document]:
-        flattened = jsonld.flatten(self.url)
-       # print(json.dumps(flattened, indent=2))
+        try:
+            flattened = jsonld.flatten(self.url)
+        # print(json.dumps(flattened, indent=2))
 
-        for i in flattened:
-            print("--", i['@id'])
-        documents = self.parse(flattened)
-        print(documents)
+            for i in flattened:
+                print("--", i['@id'])
+            documents = self.parse(flattened)
+        #  print(documents)
 
-        return documents
+            return documents
+        except:
+            print("Error loading resource", self.url)
+            result = {"error": "Error loading resource", "url": self.url}
+            return result
+
+
 # see https://github.com/hwchase17/langchain/blob/master/langchain/document_loaders/json_loader.py
+
+
     def parse(self, json_data) -> list[Document]:
         documents = []
         containers = []
         result = {}
 
         hash = hashlib.md5(json.dumps(json_data).encode())
-        print("The hexadecimal equivalent of hash is : ", end ="")
+        print("The hexadecimal equivalent of hash is : ", end="")
         print(hash.hexdigest())
 
-
         for item in json_data:
-            print(json.dumps(item, indent=2))
+           # print(json.dumps(item, indent=2))
             document = Document(
                 metadata={
                     # Set the metadata properties based on the JSON data
@@ -50,27 +58,29 @@ class JSONDocumentLoader(BaseLoader):
                 page_content=json.dumps(item),
             )
             documents.append(document)
-            if '@type' in item :
-                #print("type", item['@type'])
-                if 'http://www.w3.org/ns/ldp#BasicContainer' in item['@type'] or 'http://www.w3.org/ns/ldp#Container' in item['@type']: 
-                    print("todo", item['@id'])
+            if '@type' in item:
+                # print("type", item['@type'])
+                if 'http://www.w3.org/ns/ldp#BasicContainer' in item['@type'] or 'http://www.w3.org/ns/ldp#Container' in item['@type']:
+                    # print("todo", item['@id'])
                     containers.append(item['@id'])
-            """ else:
-                print("no type")
-                """
+                else:
+                    print("############# todo @type", item['@type'])
+            else:
+                print("###############todo no @type", item)
+
         result['documents'] = documents
         result['containers'] = containers
         return result
 
 
-#loader = JSONDocumentLoader("https://spoggy-test4.solidcommunity.net/public/"
+# loader = JSONDocumentLoader("https://spoggy-test4.solidcommunity.net/public/"
    #                         , {
     # "Authorization": "Bearer <token>",
-    #'Accept': 'application/ld+json',
-#}
-#)
-                            
-#loader = JSONDocumentLoader("https://spoggy-test4.solidcommunity.net/profile/card#me")
+    # 'Accept': 'application/ld+json',
+# }
+# )
+
+# loader = JSONDocumentLoader("https://spoggy-test4.solidcommunity.net/profile/card#me")
 """loader = JSONDocumentLoader("https://spoggy-test4.solidcommunity.net/public/")
 
 documents = loader.load()
@@ -84,8 +94,7 @@ pdf_metadata = document.metadata
 print (pdf_metadata) """
 
 
-
-#print("\n######################\nMULTI\n######################\n")
+# print("\n######################\nMULTI\n######################\n")
 # https://learn.deeplearning.ai/langchain-chat-with-your-data/lesson/4/vectorstores-and-embedding
 
 # Load PDF
