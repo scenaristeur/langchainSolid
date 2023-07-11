@@ -4,6 +4,7 @@ from langchain.docstore.document import Document
 from langchain.document_loaders.base import BaseLoader
 from pyld import jsonld
 import json
+from termcolor import colored
 
 # utile ? asynch loader
 jsonld.set_document_loader(jsonld.aiohttp_document_loader(timeout=1000))
