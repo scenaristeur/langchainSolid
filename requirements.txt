@@ -1,1 +1,4 @@
+langchain
 pyld
+termcolor
+chromadb

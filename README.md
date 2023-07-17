@@ -2,8 +2,19 @@
 
 `cp .env.example .env` and complete .env
 
+
+### install dependencies 
+on windows you need Microsoft Visual C++ 14.0 or greater https://visualstudio.microsoft.com/fr/visual-cpp-build-tools/
+https://github.com/chroma-core/chroma/issues/189#issuecomment-1454418844
+
+` pip install -r requirements.txt`
+
 ### run this tool for scanning a pod
 `python solid.py https://spoggy-test5.solidcommunity.net/public/`
+
+
+### asking a question
+`python solid_question.py`
 
 
 
@@ -11,7 +22,7 @@
 - https://learn.deeplearning.ai/langchain-chat-with-your-data/lesson/2/document-loading
 
 
- pip install -r requirements.txt
+
 
  - json loader https://www.youtube.com/watch?v=Ldr-ioU_ELo
 
